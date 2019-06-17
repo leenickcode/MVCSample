@@ -1,41 +1,52 @@
 package com.example.mvpsample;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.example.mvpsample.callback.Callback;
+import com.example.mvpsample.contarct.IContract;
 import com.example.mvpsample.contarct.SampleContract;
 import com.example.mvpsample.entity.ListBanner;
-import com.example.mvpsample.presenter.BasePresenter;
 
-public class MainActivity extends AppCompatActivity implements SampleContract.SampleView {
-    private SampleContract.SamplePresenter samplePresenter;
+public class MainActivity extends BaseActivity<SampleContract.SamplePresenter> implements SampleContract.SampleView {
     private static final String TAG = "MainActivity";
     TextView tv_title;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        tv_title=findViewById(R.id.tv_title);
-        setPresenter(new SampleContract.SamplePresenter());
-        samplePresenter.getBanner(new Callback<ListBanner>() {
-            @Override
-            public void callback(ListBanner listBanner) {
-                Log.d(TAG, "callback: "+listBanner.getData().get(0).getTitle());
-                setDataToView(listBanner);
-            }
-        });
+    IContract.IPresenter initPresenter() {
+        return new SampleContract.SamplePresenter();
     }
 
     @Override
-    public void setPresenter(BasePresenter presenter) {
-        samplePresenter= (SampleContract.SamplePresenter) presenter;
+    public int getContentViewId() {
+        return R.layout.activity_main;
     }
+
+    @Override
+    protected void initView(Bundle savedInstanceState) {
+        tv_title=findViewById(R.id.tv_title);
+    }
+
+    @Override
+    protected void initVariable() {
+
+    }
+
+    @Override
+    protected void setListener() {
+
+    }
+
+    @Override
+    protected void processLogic(Bundle savedInstanceState) {
+        mPresenter.getBanner(this);
+    }
+
+
 
     @Override
     public void setDataToView(final ListBanner listBanner) {
+        Log.d(TAG, "setDataToView: ");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -43,4 +54,6 @@ public class MainActivity extends AppCompatActivity implements SampleContract.Sa
             }
         });
     }
+
+
 }
